@@ -4,9 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import anhkiet.dev.course_management.config.ApiMessage;
 import anhkiet.dev.course_management.domain.entity.Enrollment;
-import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.request.EnrollmentRequest;
-import anhkiet.dev.course_management.domain.request.UserRequest;
 import anhkiet.dev.course_management.service.EnrollmentService;
 
 import org.springframework.http.HttpStatus;
@@ -23,11 +21,9 @@ public class EnrollmentController {
     public EnrollmentController(EnrollmentService enrollmentService){
         this.enrollmentService = enrollmentService;
     }
-
     @PostMapping("/enrollments")
     @ApiMessage("Create new Enrollment")
     public ResponseEntity<Enrollment> createNewEnrollment(@RequestBody EnrollmentRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(this.enrollmentService.handleSaveEnrollment(request));
     }
-    
 }

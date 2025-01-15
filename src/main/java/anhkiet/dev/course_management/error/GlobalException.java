@@ -23,7 +23,8 @@ public class GlobalException {
       value = {
         InvalidIDException.class,
         EntityExistsException.class,
-        ResourceExistException.class
+        ResourceExistException.class,
+        VerificationException.class
       })
   public ResponseEntity<RestResponce<Object>> badRequestException(Exception ex) {
     RestResponce<Object> res = new RestResponce<Object>();

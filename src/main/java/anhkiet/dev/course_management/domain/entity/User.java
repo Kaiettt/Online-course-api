@@ -36,7 +36,8 @@ public class User {
     @JsonIgnore
     private String password; 
     private String profilePicture;
-
+    private boolean enabled;
+    
     @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY) 
     @JsonIgnore
     private List<Course> courses;

@@ -1,5 +1,6 @@
 package anhkiet.dev.course_management.config;
 
+import anhkiet.dev.course_management.error.VerificationException;
 import anhkiet.dev.course_management.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,10 +20,13 @@ public class UserDetailServiceImpl  implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         anhkiet.dev.course_management.domain.entity.User user = this.userService.getUserByUserName(username);
+        if(user == null){
+            throw new UsernameNotFoundException("Username/Password not valid");
+        }
         return new User(
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_"+user.getRole().getName())));
+            user.getEmail(),
+            user.getPassword(),
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()))
+    );
     }
-    int x = 10;
 }

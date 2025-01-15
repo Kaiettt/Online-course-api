@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Value;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,7 +37,7 @@ public class AuthenticationController {
         this.authenicationService = authenicationService;
 
     }
-
+    
     @PostMapping("/login")
     @ApiMessage("Login succesfully")
     public ResponseEntity<LoginResponce> login(@RequestBody LoginDTO loginDto) {
@@ -51,7 +55,14 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     @ApiMessage("Singup succesfully")
-    public ResponseEntity<User> login(@RequestBody @Valid SignupRequest request) throws ResourceExistException,EntityNotExistException{
-        return ResponseEntity.ok().body(this.authenicationService.handleSingUp(request));
+    public ResponseEntity<Void> login(@RequestBody @Valid SignupRequest request) throws ResourceExistException,EntityNotExistException{
+        this.authenicationService.handleSingUp(request);
+        return ResponseEntity.ok().body(null);
     }
+
+    // @GetMapping("/confirm")
+    // public ResponseEntity<Void> confirm(@RequestParam("token") String token) {
+    //     return ResponseEntity.ok().body(null);
+    // }
+    
 }
