@@ -1,23 +1,28 @@
 package anhkiet.dev.course_management.domain.responce;
 
+import org.springframework.http.ResponseCookie;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class LoginResponce {
-    private String username;
     private String accessToken;
-    public String getUsername() {
-        return username;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public LoginResponce(String username, String accessToken) {
-        this.username = username;
-        this.accessToken = accessToken;
-    }
-    public String getAccessToken() {
-        return accessToken;
-    }
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+    private UserLogin user;
+    @JsonIgnore
+    private ResponseCookie springCookie;
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class UserLogin{
+        private String userName;
+        private String fullName;
     }
     
 }

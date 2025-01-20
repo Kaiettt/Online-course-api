@@ -12,6 +12,14 @@ public class SingupValidator implements ConstraintValidator<Signup, SignupReques
     @Override
     public boolean isValid(SignupRequest request, ConstraintValidatorContext context) {
         boolean isValid = true;
+        if(!request.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+          context
+          .buildConstraintViolationWithTemplate("Invalid email format")
+          .addPropertyNode("email")
+          .addConstraintViolation()
+          .disableDefaultConstraintViolation();
+            isValid = false;
+        }
         if(!request.getPassword().equals(request.getConfirmPassword())){
           context
           .buildConstraintViolationWithTemplate("Password not match")
