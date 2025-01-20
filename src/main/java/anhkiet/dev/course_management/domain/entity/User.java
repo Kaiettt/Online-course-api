@@ -37,6 +37,8 @@ public class User {
     private String password; 
     private String profilePicture;
     private boolean enabled;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String refreshToken;
     
     @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY) 
     @JsonIgnore

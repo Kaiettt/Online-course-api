@@ -1,6 +1,4 @@
 package anhkiet.dev.course_management.config;
-
-import anhkiet.dev.course_management.error.VerificationException;
 import anhkiet.dev.course_management.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

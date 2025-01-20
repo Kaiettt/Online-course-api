@@ -8,9 +8,11 @@ import anhkiet.dev.course_management.domain.responce.LoginResponce;
 import anhkiet.dev.course_management.error.EntityNotExistException;
 import anhkiet.dev.course_management.error.ResourceExistException;
 import anhkiet.dev.course_management.service.AuthenicationService;
+import anhkiet.dev.course_management.service.UserService;
 import anhkiet.dev.course_management.util.SecurityUtil;
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,21 +23,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Value;
 
 
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final SecurityUtil securityUtil;
-    private AuthenicationService authenicationService;
-    public AuthenticationController(AuthenicationService authenicationService,AuthenticationManagerBuilder authenticationManagerBuilder,SecurityUtil securityUtil) {
+    private final AuthenicationService authenicationService;
+    private final  UserService userService;
+    public AuthenticationController( UserService userService,AuthenicationService authenicationService,AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.securityUtil = securityUtil;
         this.authenicationService = authenicationService;
-
+      this.userService = userService;
     }
     
     @PostMapping("/login")
@@ -48,9 +47,10 @@ public class AuthenticationController {
         // xác thực người dùng => cần viết hàm loadUserByUsername
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String accessToken = this.securityUtil.createToken(authentication);
-        LoginResponce loginResponce = new LoginResponce(loginDto.getUsername(), accessToken);
-        return ResponseEntity.ok().body(loginResponce);
+
+        LoginResponce loginResponce = this.authenicationService.handleLoginResponce(authentication,loginDto.getUsername());
+        
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,loginResponce.getSpringCookie().toString()).body(loginResponce);
     }
 
     @PostMapping("/signup")
@@ -59,10 +59,20 @@ public class AuthenticationController {
         this.authenicationService.handleSingUp(request);
         return ResponseEntity.ok().body(null);
     }
-
-    // @GetMapping("/confirm")
-    // public ResponseEntity<Void> confirm(@RequestParam("token") String token) {
-    //     return ResponseEntity.ok().body(null);
-    // }
+  @GetMapping("/auth/account")
+  @ApiMessage("Fetch Account")
+  public ResponseEntity<LoginResponce.UserLogin> getAccont(){
+    String email =
+        SecurityUtil.getCurrentUserLogin().isPresent()
+            ? SecurityUtil.getCurrentUserLogin().get()
+            : "";
+    User user = this.userService.getUserByUserName(email);
+    LoginResponce.UserLogin userLogin = new LoginResponce.UserLogin();
+    if (user != null) {
+      userLogin.setFullName(user.getName());
+      userLogin.setUserName(email);
+    }
+    return ResponseEntity.ok().body(userLogin);
+  }
     
 }

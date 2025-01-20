@@ -83,9 +83,9 @@ public class UserService {
     public User getUserByUserName(String username) {
         return this.userRepository.findByEmail(username);
     }
+    public void updateRefreshToken(User user) {
+        this.userRepository.save(user);
+    }
 
-    // public void EnableUser(String userName){
-    //     return this.userRepository.
-    // }
 }
 
