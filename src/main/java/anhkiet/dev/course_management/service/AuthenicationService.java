@@ -28,6 +28,8 @@ public class AuthenicationService {
     private final FacultyService facultyService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityUtil securityUtil;
+    private final EmailServiceImpl emailServiceImpl;
+    private ConfirmationService confirmationService;
     // private final ConfirmationService confirmationService;
     public void handleSingUp(SignupRequest request) throws ResourceExistException,EntityExistsException {
         if(this.userService.getUserByUserName(request.getEmail()) != null){
@@ -53,7 +55,7 @@ public class AuthenicationService {
 
         String link = "http://localhost:9409/api/v1/auth/confirm?token=" + verificationToken;
 
-        // this.emailService.send(verificationToken, user.getName(),link);
+        this.emailServiceImpl.send(request.getEmail(), user.getName(),link);
 
         // return link;
     }
@@ -83,17 +85,20 @@ public class AuthenicationService {
         return loginResponce;
     }
 
-    // @Transactional
-    // public void handleEmailConfirmation(String verificationToken) throws VerificationException{
-    //     ConfirmationToken confirmationToken = this.confirmationService.getConfirmationByToken(verificationToken).orElseThrow(
-    //         () -> new VerificationException("token is not found.")
-    //     );
-    //     if(confirmationToken.getConfirmedAt() != null){
-    //         throw new VerificationException("email is already confirmed");
-    //     }
-    //     if(confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())){
-    //         throw new VerificationException("email is already expired");
-    //     }
-
-    // }
+    @Transactional
+    public void handleEmailConfirmation(String verificationToken) throws VerificationException{
+        ConfirmationToken confirmationToken = this.confirmationService.getConfirmationByToken(verificationToken).orElseThrow(
+            () -> new VerificationException("token is not found.")
+        );
+        if(confirmationToken.getConfirmedAt() != null){
+            throw new VerificationException("email is already confirmed");
+        }
+        if(confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())){
+            throw new VerificationException("email is already expired");
+        }
+        this.confirmationService.ConfirmToken(verificationToken);
+        User user = this.userService.getUserById(confirmationToken.getUser().getId());
+        user.setEnabled(true);
+        this.userService.handleUpdateUser(user);
+    }
 }

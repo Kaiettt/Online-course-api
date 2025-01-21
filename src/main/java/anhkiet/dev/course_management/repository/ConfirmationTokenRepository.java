@@ -10,12 +10,12 @@ import java.util.Optional;
 import anhkiet.dev.course_management.domain.entity.ConfirmationToken;
 import jakarta.transaction.Transactional;
 public interface ConfirmationTokenRepository extends JpaRepository<ConfirmationToken, Long>, JpaSpecificationExecutor<ConfirmationToken>{
-    // Optional<ConfirmationToken> findByToken(String token);
-    // @Modifying
-    // @Transactional
-    // @Query(
-    //     value = "UPDATE confirmation_tokens ct SET ct.confirmed_at = ?2 WHERE ct.token = ?1",
-    //     nativeQuery = true
-    // )
-    // void updateConfirmedAt(String token, LocalDateTime confirmedAt);
+    Optional<ConfirmationToken> findByToken(String token);
+    @Modifying
+    @Transactional
+    @Query(
+        value = "UPDATE confirmation_token ct SET ct.confirmed_at = ?2 WHERE ct.token = ?1",
+        nativeQuery = true
+    )
+    void updateConfirmedAt(String token, LocalDateTime confirmedAt);
 }

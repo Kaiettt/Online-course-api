@@ -1,21 +1,20 @@
 package anhkiet.dev.course_management.service;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
 @AllArgsConstructor
-@Service
-public class EmailService{
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
-
+@Component
+public class EmailServiceImpl{
     private final JavaMailSender mailSender;
+    private final static Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
 
     @Async
@@ -113,4 +112,3 @@ public class EmailService{
                 "</div></div>";
     }
 }
-
