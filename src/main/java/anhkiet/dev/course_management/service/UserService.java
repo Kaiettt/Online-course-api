@@ -86,6 +86,9 @@ public class UserService {
     public void updateRefreshToken(User user) {
         this.userRepository.save(user);
     }
+    public void handleUpdateUser(User user) {
+        this.userRepository.save(user);
+    }
 
 }
 

@@ -7,6 +7,7 @@ import anhkiet.dev.course_management.domain.request.SignupRequest;
 import anhkiet.dev.course_management.domain.responce.LoginResponce;
 import anhkiet.dev.course_management.error.EntityNotExistException;
 import anhkiet.dev.course_management.error.ResourceExistException;
+import anhkiet.dev.course_management.error.VerificationException;
 import anhkiet.dev.course_management.service.AuthenicationService;
 import anhkiet.dev.course_management.service.UserService;
 import anhkiet.dev.course_management.util.SecurityUtil;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -59,6 +62,12 @@ public class AuthenticationController {
         this.authenicationService.handleSingUp(request);
         return ResponseEntity.ok().body(null);
     }
+    @GetMapping("/confirm")
+    public ResponseEntity<Void> confirm(@RequestParam("token") String token) throws VerificationException {
+      this.authenicationService.handleEmailConfirmation(token);
+      return ResponseEntity.ok().body(null);
+  }
+    
   @GetMapping("/auth/account")
   @ApiMessage("Fetch Account")
   public ResponseEntity<LoginResponce.UserLogin> getAccont(){
