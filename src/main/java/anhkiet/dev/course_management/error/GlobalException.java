@@ -6,14 +6,13 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.springframework.security.access.AccessDeniedException;
 import anhkiet.dev.course_management.domain.responce.RestResponce;
 import jakarta.persistence.EntityExistsException;
 
@@ -60,4 +59,13 @@ public class GlobalException {
     res.setMessage("Exception occurs...");
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }
+
+  @ExceptionHandler(AccessDeniedException.class)
+public ResponseEntity<RestResponce<Object>> handleUnauthorizedAccessException(AccessDeniedException ex) {
+    RestResponce<Object> res = new RestResponce<>();
+    res.setStatusCode(HttpStatus.FORBIDDEN.value());
+    res.setError(ex.getMessage());
+    res.setMessage("Unauthorized access. You do not have permission to access this resource.");
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+}
 }

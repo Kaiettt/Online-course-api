@@ -73,7 +73,6 @@ public class UserService {
     
     public User getUserById(long id){
         User user = this.userRepository.findById(id).orElse(null);
-        // return UserMapper.INSTANCE.userToUserResponse(user);
         return user;
     }
     public void deleteUserById(long id) {
@@ -89,6 +88,14 @@ public class UserService {
     public void handleUpdateUser(User user) {
         this.userRepository.save(user);
     }
-
+    public User getUserByRefreshToken(String refresh_token) {
+        return this.userRepository.findByRefreshToken(refresh_token);
+    }
+    public void handleUpdateRefreshToken(User user,String refreshToken){
+        if(user != null){
+            user.setRefreshToken(refreshToken);
+            this.userRepository.save(user);
+        }
+    }
 }
 

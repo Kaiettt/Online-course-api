@@ -7,4 +7,5 @@ import anhkiet.dev.course_management.domain.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     User findByEmail(String email);
+    User findByRefreshToken(String refreshToken);
 }
