@@ -36,7 +36,7 @@ public class SecurityUtil {
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-    public String createToken(Authentication authentication,LoginResponce.UserLogin user) {
+    public String createToken(String userName,LoginResponce.UserLogin user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtAccessTokenExpiration, ChronoUnit.SECONDS);
         List<String> authorities = new ArrayList<>();
@@ -46,7 +46,7 @@ public class SecurityUtil {
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
-            .subject(authentication.getName())
+            .subject(userName)
             .claim("user", user)
             .claim("permission", authorities)
             .build();
@@ -57,7 +57,7 @@ public class SecurityUtil {
     }
 
 
-    public String createRefreshToken(Authentication authentication,LoginResponce.UserLogin user) {
+    public String createRefreshToken(String userName,LoginResponce.UserLogin user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtRefreshTokenExpiration, ChronoUnit.SECONDS);
 
@@ -65,7 +65,7 @@ public class SecurityUtil {
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
-            .subject(authentication.getName())
+            .subject(userName)
             .claim("user", user)
             .build();
 
@@ -82,6 +82,7 @@ public class SecurityUtil {
      */
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
+        System.out.println("asd");
         return Optional.ofNullable(securityContext.getAuthentication())
             .filter(authentication -> authentication.getCredentials() instanceof String)
             .map(authentication -> (String) authentication.getCredentials());

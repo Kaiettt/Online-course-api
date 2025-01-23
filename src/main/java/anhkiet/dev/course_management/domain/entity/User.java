@@ -56,6 +56,6 @@ public class User {
     @JsonIgnore
     private List<Enrollment> enrollments; 
 
-
+    
 
 }

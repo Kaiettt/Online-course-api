@@ -53,24 +53,26 @@ public class AuthenicationService {
         this.userService.handleSaveRegistration(user);
         String verificationToken = this.userService.handleUserRegistrationWithEmail(user);
 
-        String link = "http://localhost:9409/api/v1/auth/confirm?token=" + verificationToken;
+        String link = "http://localhost:8080/api/v1/auth/confirm?token=" + verificationToken;
 
         this.emailServiceImpl.send(request.getEmail(), user.getName(),link);
-
-        // return link;
     }
-    public LoginResponce handleLoginResponce(Authentication authentication, String userName) {
+    
+    public LoginResponce handleLoginResponce(Authentication authentication, String userName) throws VerificationException{
 
         User user = this.userService.getUserByUserName(userName);
+        if(!user.isEnabled()){
+            throw new VerificationException("User is unenabled yet");
+        }
         LoginResponce.UserLogin userResponce = new LoginResponce.UserLogin();
         userResponce.setUserName(userName);
         userResponce.setFullName(user.getName());
-        String accessToken = this.securityUtil.createToken(authentication,userResponce);
+        String accessToken = this.securityUtil.createToken(userName,userResponce);
         LoginResponce loginResponce = new LoginResponce();
         loginResponce.setUser(userResponce);
         loginResponce.setAccessToken(accessToken);
 
-        String refreshToken = this.securityUtil.createRefreshToken(authentication, userResponce);
+        String refreshToken = this.securityUtil.createRefreshToken(userName, userResponce);
         user.setRefreshToken(refreshToken);
         this.userService.updateRefreshToken(user);
 
@@ -100,5 +102,32 @@ public class AuthenicationService {
         User user = this.userService.getUserById(confirmationToken.getUser().getId());
         user.setEnabled(true);
         this.userService.handleUpdateUser(user);
+    }
+    public LoginResponce getAccessToken(String refresh_token) throws EntityExistsException{
+        User user = this.userService.getUserByRefreshToken(refresh_token);
+        if(user == null){
+            throw new EntityExistsException("Refresh Token is invalid");
+        }
+        LoginResponce.UserLogin userResponce = new LoginResponce.UserLogin();
+        userResponce.setUserName(user.getEmail());
+        userResponce.setFullName(user.getName());
+        String accessToken = this.securityUtil.createToken(user.getEmail(),userResponce);
+        LoginResponce loginResponce = new LoginResponce();
+        loginResponce.setUser(userResponce);
+        loginResponce.setAccessToken(accessToken);
+
+        String refreshToken = this.securityUtil.createRefreshToken(user.getEmail(), userResponce);
+        user.setRefreshToken(refreshToken);
+        this.userService.updateRefreshToken(user);
+
+
+        ResponseCookie springCookie = ResponseCookie.from("refresh-token", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(this.securityUtil.jwtRefreshTokenExpiration)
+                .build();
+        loginResponce.setSpringCookie(springCookie);
+        return loginResponce;
     }
 }
