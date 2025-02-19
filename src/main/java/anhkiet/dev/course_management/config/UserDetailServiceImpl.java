@@ -1,4 +1,5 @@
 package anhkiet.dev.course_management.config;
+import anhkiet.dev.course_management.domain.entity.Role;
 import anhkiet.dev.course_management.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +22,10 @@ public class UserDetailServiceImpl  implements UserDetailsService {
         if(user == null){
             throw new UsernameNotFoundException("Username/Password not valid");
         }
-        return new User(
+        User user_detail = new User(
             user.getEmail(),
             user.getPassword(),
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().getName()))
-    );
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
+        return user_detail;
     }
 }

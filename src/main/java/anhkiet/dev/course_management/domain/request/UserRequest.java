@@ -3,6 +3,7 @@ package anhkiet.dev.course_management.domain.request;
 import anhkiet.dev.course_management.domain.entity.Faculty;
 import anhkiet.dev.course_management.domain.entity.Role;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class UserRequest {
     private String name; 
     private String email; 

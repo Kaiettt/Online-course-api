@@ -1,66 +1,44 @@
 package anhkiet.dev.course_management.domain.entity;
 
-import java.time.Instant;
 import java.util.List;
-import anhkiet.dev.course_management.util.SecurityUtil;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Builder
-@Entity
-@Table(name = "roles")
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private String name;
-    private String description;
-    private boolean active;
-    private Instant created_at;
-    private Instant updated_at;
-    private String updatedBy;
-    private String createdBy;
-    
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "role_permission", 
-        joinColumns = @JoinColumn(name = "role_id"), 
-        inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
-    private List<Permisison> permissions;
-    @PrePersist
-    public void prePersist() {
-        String email = SecurityUtil.getCurrentUserLogin().isPresent()
-            ? SecurityUtil.getCurrentUserLogin().get()
-            : "";
-        Instant now = Instant.now();
-        this.created_at = now;
-        this.createdBy = email;
-    }
+import java.util.Set;
+import java.util.stream.Collectors;
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updated_at = Instant.now();
-        String email = SecurityUtil.getCurrentUserLogin().isPresent()
-            ? SecurityUtil.getCurrentUserLogin().get()
-            : "";
-        this.updatedBy = email;
-    }
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+@AllArgsConstructor
+public enum Role {
+    STUDENT(Set.of(
+        Permission.STUDENT_READ, 
+        Permission.STUDENT_CREATE, 
+        Permission.STUDENT_UPDATE, 
+        Permission.STUDENT_DELETE
+    )),
+    INSTRUCTOR(Set.of(
+        Permission.INSTRUCTOR_READ, 
+        Permission.INSTRUCTOR_CREATE, 
+        Permission.INSTRUCTOR_UPDATE, 
+        Permission.INSTRUCTOR_DELETE
+    )),
+    ADMIN(Set.of(
+        Permission.ADMIN_READ, 
+        Permission.ADMIN_CREATE, 
+        Permission.ADMIN_UPDATE, 
+        Permission.ADMIN_DELETE
+    ));
+
+    @Getter
+  private final Set<Permission> permissions;
+
+  public List<SimpleGrantedAuthority> getAuthorities() {
+    var authorities = getPermissions()
+            .stream()
+            .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+            .collect(Collectors.toList());
+    authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+    return authorities;
+  }
 }
+

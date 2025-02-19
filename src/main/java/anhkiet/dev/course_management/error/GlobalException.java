@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 import anhkiet.dev.course_management.domain.responce.RestResponce;
@@ -21,7 +22,7 @@ public class GlobalException {
     @ExceptionHandler(
       value = {
         InvalidIDException.class,
-        EntityExistsException.class,
+        
         ResourceExistException.class,
         VerificationException.class
       })
@@ -29,6 +30,18 @@ public class GlobalException {
     RestResponce<Object> res = new RestResponce<Object>();
     res.setStatusCode(HttpStatus.BAD_REQUEST.value());
     res.setError(ex.getMessage());
+    res.setMessage("Exception occurs...");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+  }
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({
+    EntityExistsException.class,
+    EmailAlreadyExistsException.class
+  })
+  public ResponseEntity<RestResponce<Object>> badRequestException(RuntimeException exception) {
+    RestResponce<Object> res = new RestResponce<Object>();
+    res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+    res.setError(exception.getMessage());
     res.setMessage("Exception occurs...");
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }

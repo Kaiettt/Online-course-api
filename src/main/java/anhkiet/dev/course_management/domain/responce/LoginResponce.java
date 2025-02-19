@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import anhkiet.dev.course_management.domain.entity.Role;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -23,6 +25,7 @@ public class LoginResponce {
     public static class UserLogin{
         private String userName;
         private String fullName;
+        private Role role;
     }
     
 }

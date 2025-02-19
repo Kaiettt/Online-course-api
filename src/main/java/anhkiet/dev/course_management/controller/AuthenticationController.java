@@ -5,6 +5,7 @@ import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.request.LoginDTO;
 import anhkiet.dev.course_management.domain.request.SignupRequest;
 import anhkiet.dev.course_management.domain.responce.LoginResponce;
+import anhkiet.dev.course_management.domain.responce.SingupResponce;
 import anhkiet.dev.course_management.error.EntityNotExistException;
 import anhkiet.dev.course_management.error.ResourceExistException;
 import anhkiet.dev.course_management.error.VerificationException;
@@ -61,14 +62,14 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     @ApiMessage("Singup succesfully")
-    public ResponseEntity<Void> login(@RequestBody @Valid SignupRequest request) throws ResourceExistException,EntityNotExistException{
-        this.authenicationService.handleSingUp(request);
-        return ResponseEntity.ok().body(null);
+    public ResponseEntity<SingupResponce> login(@RequestBody @Valid SignupRequest request) throws ResourceExistException{
+        
+        return ResponseEntity.ok().body(this.authenicationService.handleSingUp(request));
     }
     @GetMapping("/confirm")
-    public ResponseEntity<Void> confirm(@RequestParam("token") String token) throws VerificationException {
-      this.authenicationService.handleEmailConfirmation(token);
-      return ResponseEntity.ok().body(null);
+    public ResponseEntity<SingupResponce> confirm(@RequestParam("token") String token) throws VerificationException {
+      
+      return ResponseEntity.ok().body(this.authenicationService.handleEmailConfirmation(token));
   }
     
   @GetMapping("/auth/account")

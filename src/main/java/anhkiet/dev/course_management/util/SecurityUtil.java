@@ -13,10 +13,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import anhkiet.dev.course_management.domain.entity.Permission;
 import anhkiet.dev.course_management.domain.responce.LoginResponce;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -36,25 +40,28 @@ public class SecurityUtil {
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-    public String createToken(String userName,LoginResponce.UserLogin user) {
+    public String createToken(String userName, LoginResponce.UserLogin user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtAccessTokenExpiration, ChronoUnit.SECONDS);
+        
+        // Collect authorities as strings
         List<String> authorities = new ArrayList<>();
-        authorities.add("ROLE_USER_CREATE");
-        authorities.add("ROLE_USER_UPDATE");
-        // @formatter:off
+        for(Permission permission: user.getRole().getPermissions()){
+            authorities.add(permission.name());
+        }
+        authorities.add(user.getRole().name());  
+        
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
             .subject(userName)
-            .claim("user", user)
-            .claim("permission", authorities)
+            .claim("authorities", authorities)  // Store authorities as a list of strings
             .build();
-
+                    // .claim("user", user.getUserName())
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
-
     }
+    
 
 
     public String createRefreshToken(String userName,LoginResponce.UserLogin user) {
@@ -82,7 +89,6 @@ public class SecurityUtil {
      */
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        System.out.println("asd");
         return Optional.ofNullable(securityContext.getAuthentication())
             .filter(authentication -> authentication.getCredentials() instanceof String)
             .map(authentication -> (String) authentication.getCredentials());
