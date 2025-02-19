@@ -2,6 +2,8 @@ package anhkiet.dev.course_management.service;
 
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,7 @@ import anhkiet.dev.course_management.domain.entity.Role;
 import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.request.SignupRequest;
 import anhkiet.dev.course_management.domain.responce.LoginResponce;
+import anhkiet.dev.course_management.domain.responce.SingupResponce;
 import anhkiet.dev.course_management.error.ResourceExistException;
 import anhkiet.dev.course_management.error.VerificationException;
 import anhkiet.dev.course_management.util.SecurityUtil;
@@ -30,32 +33,34 @@ public class AuthenicationService {
     private final SecurityUtil securityUtil;
     private final EmailServiceImpl emailServiceImpl;
     private ConfirmationService confirmationService;
-    // private final ConfirmationService confirmationService;
-    public void handleSingUp(SignupRequest request) throws ResourceExistException,EntityExistsException {
+    public SingupResponce handleSingUp(SignupRequest request) throws ResourceExistException {
         if(this.userService.getUserByUserName(request.getEmail()) != null){
             throw new ResourceExistException("Email already exist");
         }
         Faculty dbFaculty = this.facultyService.getFacultyById(request.getFacultyId());
-        if(dbFaculty == null){
-            throw new EntityExistsException("Faculty not found");
-        }
-        Role dbRole = new Role();
-        dbRole.setId(2);
-        dbRole.setName("STUDENT"); 
+        // if(dbFaculty == null){
+        //     throw new EntityExistsException("Faculty not found");
+        // }; 
         User user = User.builder()
             .faculty(dbFaculty)
             .password(passwordEncoder.encode(request.getPassword()))
             .name(request.getFirstName() + " " + request.getLastName())
             .email(request.getEmail())
-            .role(dbRole)
+            .role(Role.ADMIN)
             .enabled(false)
             .build();
         this.userService.handleSaveRegistration(user);
-        String verificationToken = this.userService.handleUserRegistrationWithEmail(user);
+        long verificationToken = this.userService.handleUserRegistrationWithEmail(user);
+        this.emailServiceImpl.send(request.getEmail(), user.getName(),verificationToken);
 
-        String link = "http://localhost:8080/api/v1/auth/confirm?token=" + verificationToken;
+        SingupResponce responce = SingupResponce.builder()
+            .userName(user.getEmail())
+            .fullName(user.getName())
+            .role(user.getRole())
+            .enable(false)
+            .build();
 
-        this.emailServiceImpl.send(request.getEmail(), user.getName(),link);
+        return responce;
     }
     
     public LoginResponce handleLoginResponce(Authentication authentication, String userName) throws VerificationException{
@@ -67,6 +72,7 @@ public class AuthenicationService {
         LoginResponce.UserLogin userResponce = new LoginResponce.UserLogin();
         userResponce.setUserName(userName);
         userResponce.setFullName(user.getName());
+        userResponce.setRole(user.getRole());
         String accessToken = this.securityUtil.createToken(userName,userResponce);
         LoginResponce loginResponce = new LoginResponce();
         loginResponce.setUser(userResponce);
@@ -88,8 +94,11 @@ public class AuthenicationService {
     }
 
     @Transactional
-    public void handleEmailConfirmation(String verificationToken) throws VerificationException{
-        ConfirmationToken confirmationToken = this.confirmationService.getConfirmationByToken(verificationToken).orElseThrow(
+    public SingupResponce handleEmailConfirmation(String verificationToken) throws VerificationException{
+        List<String> tokenList = Arrays.asList(verificationToken.split(","));
+        long tokenNumber = Long.parseLong(tokenList.get(0));
+        String email =  tokenList.get(1);
+        ConfirmationToken confirmationToken = this.confirmationService.getConfirmationByTokenAndEmail(tokenNumber,email).orElseThrow(
             () -> new VerificationException("token is not found.")
         );
         if(confirmationToken.getConfirmedAt() != null){
@@ -98,11 +107,20 @@ public class AuthenicationService {
         if(confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())){
             throw new VerificationException("email is already expired");
         }
-        this.confirmationService.ConfirmToken(verificationToken);
+        this.confirmationService.ConfirmToken(tokenNumber,email);
         User user = this.userService.getUserById(confirmationToken.getUser().getId());
         user.setEnabled(true);
         this.userService.handleUpdateUser(user);
+
+        SingupResponce responce = SingupResponce.builder()
+        .userName(user.getEmail())
+        .fullName(user.getName())
+        .enable(true)
+        .build();
+
+        return responce;
     }
+
     public LoginResponce getAccessToken(String refresh_token) throws EntityExistsException{
         User user = this.userService.getUserByRefreshToken(refresh_token);
         if(user == null){

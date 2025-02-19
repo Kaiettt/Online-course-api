@@ -7,6 +7,7 @@ import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.request.UserRequest;
 
 import anhkiet.dev.course_management.config.ApiMessage;
+import anhkiet.dev.course_management.error.EmailAlreadyExistsException;
 import anhkiet.dev.course_management.error.HandleNumber;
 import anhkiet.dev.course_management.error.InvalidIDException;
 import anhkiet.dev.course_management.service.UserService;
@@ -33,7 +34,7 @@ public class UserController {
     @PostMapping("/users")
     @ApiMessage("Create new User")
     public ResponseEntity<User> createNewUser(@RequestBody UserRequest requestUser){
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.handleSaveUser(requestUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.createNewUser(requestUser));
     }
 
     @GetMapping("/users/{id}")

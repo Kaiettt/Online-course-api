@@ -1,6 +1,8 @@
 package anhkiet.dev.course_management.service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -16,11 +18,11 @@ public class ConfirmationService {
         this.confirmationTokenRepository = confirmationTokenRepository;
     }
 
-    public Optional<ConfirmationToken> getConfirmationByToken(String token){
-        return this.confirmationTokenRepository.findByToken(token);
+    public Optional<ConfirmationToken> getConfirmationByTokenAndEmail(long token,String email){
+        return this.confirmationTokenRepository.findByTokenAndUserEmail(token,email);
     }
 
-    public void ConfirmToken(String verificationToken) {
-        this.confirmationTokenRepository.updateConfirmedAt(verificationToken, LocalDateTime.now());
+    public void ConfirmToken(long tokenNumber,String email) {
+        this.confirmationTokenRepository.updateConfirmedAt(tokenNumber, LocalDateTime.now(),email);
     }
 }
