@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import anhkiet.dev.course_management.domain.entity.Course;
+import anhkiet.dev.course_management.domain.responce.CourseResponce;
 import anhkiet.dev.course_management.domain.responce.ResultPaginationDTO;
 import anhkiet.dev.course_management.error.HandleNumber;
 import anhkiet.dev.course_management.error.InvalidIDException;
@@ -30,7 +31,7 @@ public class CourseController {
     }
 
     @PostMapping("/courses")
-    public ResponseEntity<Course> createNewCourse(@RequestBody Course course) {
+    public ResponseEntity<CourseResponce> createNewCourse(@RequestBody Course course) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.courseService.handleSaveCourse(course));
     }
 

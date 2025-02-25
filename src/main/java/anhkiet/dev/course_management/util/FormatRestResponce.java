@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import anhkiet.dev.course_management.domain.responce.RestResponce;
 import anhkiet.dev.course_management.config.ApiMessage;
 import jakarta.servlet.http.HttpServletResponse;
-
+import org.springframework.core.io.Resource;
 @ControllerAdvice
 public class FormatRestResponce implements ResponseBodyAdvice<Object>{
 
@@ -29,7 +29,7 @@ public class FormatRestResponce implements ResponseBodyAdvice<Object>{
 
         RestResponce<Object> res = new RestResponce<Object>();
         res.setStatusCode(status);
-        if(body instanceof String || body instanceof RestResponce){
+        if(body instanceof String || body instanceof RestResponce || body instanceof Resource){
             return body;
         }
         if (status >= 400) {

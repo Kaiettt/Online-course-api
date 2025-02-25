@@ -46,7 +46,7 @@ public class AuthenicationService {
             .password(passwordEncoder.encode(request.getPassword()))
             .name(request.getFirstName() + " " + request.getLastName())
             .email(request.getEmail())
-            .role(Role.ADMIN)
+            .role(Role.STUDENT)
             .enabled(false)
             .build();
         this.userService.handleSaveRegistration(user);
@@ -70,10 +70,11 @@ public class AuthenicationService {
             throw new VerificationException("User is unenabled yet");
         }
         LoginResponce.UserLogin userResponce = new LoginResponce.UserLogin();
+        userResponce.setId(user.getId());
         userResponce.setUserName(userName);
         userResponce.setFullName(user.getName());
         userResponce.setRole(user.getRole());
-        String accessToken = this.securityUtil.createToken(userName,userResponce);
+        String accessToken = this.securityUtil.createToken(userName,user);
         LoginResponce loginResponce = new LoginResponce();
         loginResponce.setUser(userResponce);
         loginResponce.setAccessToken(accessToken);
@@ -127,9 +128,10 @@ public class AuthenicationService {
             throw new EntityExistsException("Refresh Token is invalid");
         }
         LoginResponce.UserLogin userResponce = new LoginResponce.UserLogin();
+        userResponce.setId((user.getId()));
         userResponce.setUserName(user.getEmail());
         userResponce.setFullName(user.getName());
-        String accessToken = this.securityUtil.createToken(user.getEmail(),userResponce);
+        String accessToken = this.securityUtil.createToken(user.getEmail(),user);
         LoginResponce loginResponce = new LoginResponce();
         loginResponce.setUser(userResponce);
         loginResponce.setAccessToken(accessToken);

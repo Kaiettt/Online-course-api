@@ -1,5 +1,6 @@
 package anhkiet.dev.course_management.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import anhkiet.dev.course_management.domain.entity.Course;
 import anhkiet.dev.course_management.domain.entity.Faculty;
 import anhkiet.dev.course_management.domain.entity.User;
+import anhkiet.dev.course_management.domain.responce.CourseResponce;
 import anhkiet.dev.course_management.domain.responce.ResultPaginationDTO;
 import anhkiet.dev.course_management.domain.responce.ResultPaginationDTO.Meta;
 import anhkiet.dev.course_management.repository.CourseRepository;
@@ -25,7 +27,7 @@ public class CourseService {
             this.facultyService = facultyService;
     }
 
-    public Course handleSaveCourse(Course course) {
+    public CourseResponce handleSaveCourse(Course course) {
         User instructor = this.userService.getUserById(course.getInstructor().getId());
         Faculty faculty = this.facultyService.getFacultyById(course.getFaculty().getId());
         Course newCourse = Course.builder()
@@ -38,7 +40,23 @@ public class CourseService {
             .status(course.getStatus())
             .end_date(course.getEnd_date())
             .build();
-        return this.courseRepository.save(newCourse);
+        
+        course  = this.courseRepository.save(newCourse);
+        CourseResponce courseResponce = CourseResponce.builder()
+            .instructorEmail(course.getInstructor().getEmail())
+            .instructorName(course.getInstructor().getName())
+            .updatedAt(course.getUpdated_at())
+            .createdAt(course.getCreated_at())
+            .status(course.getStatus())
+            .capacity(course.getCapacity())
+            .endDate(course.getEnd_date())
+            .startDate(course.getStart_date())
+            .description(course.getDescription())
+            .facultyName(course.getFaculty().getName())
+            .name(course.getName())
+            .id(course.getId())
+            .build();
+        return courseResponce;
     }
 
     public ResultPaginationDTO getAll(Specification spec,Pageable pageable) {
@@ -50,9 +68,28 @@ public class CourseService {
             .pages(pageCourse.getTotalPages())
             .total(pageCourse.getTotalElements())
             .build();
+        
+        List<CourseResponce> courseList = new ArrayList<>();
+        for(Course course : pageCourse.getContent()){
+            CourseResponce courseResponce = CourseResponce.builder()
+            .instructorEmail(course.getInstructor().getEmail())
+            .instructorName(course.getInstructor().getName())
+            .updatedAt(course.getUpdated_at())
+            .createdAt(course.getCreated_at())
+            .status(course.getStatus())
+            .capacity(course.getCapacity())
+            .endDate(course.getEnd_date())
+            .startDate(course.getStart_date())
+            .description(course.getDescription())
+            .name(course.getName())
+            .facultyName(course.getFaculty().getName())
+            .id(course.getId())
+            .build();
+            courseList.add(courseResponce);
+        }
         ResultPaginationDTO res = ResultPaginationDTO.builder()
             .meta(meta)
-            .result(pageCourse.getContent())
+            .result(courseList)
             .build();
 
         return res;
