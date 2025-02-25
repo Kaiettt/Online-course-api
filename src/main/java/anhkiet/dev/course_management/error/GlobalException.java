@@ -22,7 +22,7 @@ public class GlobalException {
     @ExceptionHandler(
       value = {
         InvalidIDException.class,
-        
+        StorageException.class,
         ResourceExistException.class,
         VerificationException.class
       })

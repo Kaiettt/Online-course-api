@@ -1,6 +1,7 @@
 package anhkiet.dev.course_management.service;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import anhkiet.dev.course_management.domain.entity.Enrollment;
 import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.request.EnrollmentRequest;
 import anhkiet.dev.course_management.repository.EnrollmentRepository;
+import jakarta.persistence.EntityExistsException;
 
 @Service
 public class EnrollmentService {
@@ -30,6 +32,13 @@ public class EnrollmentService {
             .status(request.getEnrollmentStatus())
             .build();
         return this.enrollmentRepository.save(enrollment);
+    }
+    public Enrollment getEnrollmentByCourseAndUser(Long courseId, Long userId) throws EntityExistsException {
+        Optional<Enrollment> enrollmentOptional = this.enrollmentRepository.findByCourseIdAndUserId(courseId, userId);
+        if(!enrollmentOptional.isPresent()){
+            throw new EntityExistsException("User haven't enrolled this course yet");
+        }
+        return enrollmentOptional.get();
     }
 
 

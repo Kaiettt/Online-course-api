@@ -53,6 +53,7 @@ public class User implements UserDetails{
 
     @ManyToOne
     @JoinColumn(name = "faculty_id")
+    @JsonIgnore
     private Faculty faculty;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY) 

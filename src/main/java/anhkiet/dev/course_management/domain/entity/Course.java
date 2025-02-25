@@ -48,17 +48,21 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({"faculty", "role"})
+    @JsonIgnoreProperties({"faculty", "role","refreshToken","authorities"})
     private User instructor;
 
     @ManyToOne
     @JoinColumn(name = "faculty_id")
-    @JsonIgnoreProperties({"updated_at","created_at","bio","telephone"})
     private Faculty faculty;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY) 
     @JsonIgnore
     private List<Enrollment> enrollments;
+
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY) 
+    @JsonIgnore
+    private List<Lesson> lessons; 
 
     @PrePersist
     public void prePersist() {

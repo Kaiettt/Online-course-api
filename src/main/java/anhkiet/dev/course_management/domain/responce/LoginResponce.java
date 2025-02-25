@@ -23,6 +23,7 @@ public class LoginResponce {
     @Getter
     @Setter
     public static class UserLogin{
+        private long id;
         private String userName;
         private String fullName;
         private Role role;

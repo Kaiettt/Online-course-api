@@ -72,7 +72,7 @@ public class AuthenticationController {
       return ResponseEntity.ok().body(this.authenicationService.handleEmailConfirmation(token));
   }
     
-  @GetMapping("/auth/account")
+  @GetMapping("/account")
   @ApiMessage("Fetch Account")
   public ResponseEntity<LoginResponce.UserLogin> getAccont(){
     String email =
@@ -82,6 +82,7 @@ public class AuthenticationController {
     User user = this.userService.getUserByUserName(email);
     LoginResponce.UserLogin userLogin = new LoginResponce.UserLogin();
     if (user != null) {
+      userLogin.setId(user.getId());
       userLogin.setFullName(user.getName());
       userLogin.setUserName(email);
     }

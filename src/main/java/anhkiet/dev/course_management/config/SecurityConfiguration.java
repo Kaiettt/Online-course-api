@@ -51,10 +51,9 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         authz -> authz
-                                .requestMatchers( "/api/v1/auth/**").permitAll()
+                        .requestMatchers( "/api/v1/auth/**","/api/v1/courses","/api/v1/courses/**","/api/v1/files/**").permitAll()
                                 .requestMatchers( HttpMethod.POST,"/api/v1/courses").hasAnyRole(Role.ADMIN.name(),Role.INSTRUCTOR.name())
-                                .requestMatchers( HttpMethod.update,"/api/v1/courses").hasAnyRole(Role.ADMIN.name(),Role.INSTRUCTOR.name())
-                                .requestMatchers( "/api/v1/users").hasAnyRole(Role.ADMIN.name())
+                                .requestMatchers( HttpMethod.POST,"/api/v1/users").hasAnyRole(Role.ADMIN.name())
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(customAuthenticationEntryPoint))

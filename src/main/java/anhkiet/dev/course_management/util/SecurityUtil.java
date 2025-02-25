@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import anhkiet.dev.course_management.domain.entity.Permission;
+import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.responce.LoginResponce;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,11 +41,10 @@ public class SecurityUtil {
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-    public String createToken(String userName, LoginResponce.UserLogin user) {
+    public String createToken(String userName, User user) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtAccessTokenExpiration, ChronoUnit.SECONDS);
-        
-        // Collect authorities as strings
+
         List<String> authorities = new ArrayList<>();
         for(Permission permission: user.getRole().getPermissions()){
             authorities.add(permission.name());
