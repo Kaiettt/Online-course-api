@@ -105,12 +105,9 @@ public ResponseEntity<Resource> downloadFile(
     @RequestParam("filename") String filename,
     @RequestParam("folder") String folder
 ) throws StorageException, URISyntaxException, IOException {
+    System.out.println(filename);
     if (filename == null || filename.isEmpty()) {
         throw new StorageException("Missing required params");
-    }
-    long fileLength = fileService.getFileLength(basePath + folder, filename);
-    if (fileLength == 0) {
-        throw new StorageException("Path is not valid");
     }
 
     try {
@@ -130,7 +127,6 @@ public ResponseEntity<Resource> downloadFile(
             .header(HttpHeaders.CONTENT_DISPOSITION, 
                 "attachment; filename=\"" + resource.getFilename() + "\"")
             .header(HttpHeaders.CONTENT_TYPE, contentType)
-            .contentLength(fileLength) 
             .body(resource);
     } catch (Exception e) {
         throw new StorageException("Could not load file: " + filename);

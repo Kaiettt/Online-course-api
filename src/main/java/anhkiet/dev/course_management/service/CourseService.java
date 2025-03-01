@@ -82,7 +82,7 @@ public class CourseService {
             .startDate(course.getStart_date())
             .description(course.getDescription())
             .name(course.getName())
-            .facultyName(course.getFaculty().getName())
+            // .facultyName(course.getFaculty().getName())
             .id(course.getId())
             .build();
             courseList.add(courseResponce);

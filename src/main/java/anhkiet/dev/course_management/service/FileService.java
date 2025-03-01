@@ -10,11 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,21 +43,21 @@ public class FileService {
       throws URISyntaxException, IOException {
     String standardFileName = URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8)
                                         .replace("+", "%20");
-    String finalName = basePath + folder + "/" + System.currentTimeMillis() + "-" + standardFileName;
-    URI uri = new URI(basePath + folder + "/" + file.getOriginalFilename());
+    String timeMilis = System.currentTimeMillis()+"";
+    String finalName = basePath + folder + "/" + timeMilis + "-" + standardFileName;
+    URI uri = new URI(finalName);
     Path path = Paths.get(uri);
     try(InputStream inputStream = file.getInputStream()) {
       Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
     }
-    return Arrays.asList(finalName,System.currentTimeMillis() + "-" + standardFileName);
-
+    return Arrays.asList(finalName,timeMilis + "-" + standardFileName);
   }
 
  public long getFileLength(String folder,String filename)throws URISyntaxException, IOException, StorageException{
     URI uri = new URI(folder + "/" + filename);
     Path path = Paths.get(uri);
     File tmpDir = new File(path.toString());
-    if(tmpDir.isDirectory() || !tmpDir.exists()){
+    if(tmpDir.isDirectory()){
       return 0;
     }
     return tmpDir.length();

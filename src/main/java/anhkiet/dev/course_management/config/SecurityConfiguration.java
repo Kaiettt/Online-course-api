@@ -20,8 +20,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -51,7 +49,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         authz -> authz
-                        .requestMatchers( "/api/v1/auth/**","/api/v1/courses","/api/v1/courses/**","/api/v1/files/**").permitAll()
+                        .requestMatchers( "/api/v1/auth/**","/api/v1/courses","/api/v1/files/**").permitAll()
                                 .requestMatchers( HttpMethod.POST,"/api/v1/courses").hasAnyRole(Role.ADMIN.name(),Role.INSTRUCTOR.name())
                                 .requestMatchers( HttpMethod.POST,"/api/v1/users").hasAnyRole(Role.ADMIN.name())
                                 .anyRequest().authenticated())

@@ -1,5 +1,6 @@
 package anhkiet.dev.course_management.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -34,5 +35,12 @@ public class LessonService {
             return null;
         }
         return lesson.get();
+    }
+    public List<Lesson> getAllLessons() {
+        return this.lessonRepository.findAll();
+    }
+    public List<Lesson> getAllLessonsByCourseId(long id) {
+        List<Lesson> lessons =  this.lessonRepository.findAllByCourseId(id);
+        return lessons;
     }
 }

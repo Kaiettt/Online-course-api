@@ -25,6 +25,7 @@ public class MaterialController {
      @PostMapping("/materials")
     @ApiMessage("Create new material")
     public ResponseEntity<Material> createNewLesson(@RequestBody MaterialRequest request) throws ResourceExistException{
+        System.out.println(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(this.materialService.createNewMaterial(request));
     }
     
