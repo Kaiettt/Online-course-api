@@ -40,9 +40,10 @@ public class Lesson {
 
     @ManyToOne
     @JoinColumn(name = "course_id")
+    @JsonIgnore
     private Course course;
 
-   @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY) 
+   @OneToMany(mappedBy = "lesson") 
     private List<Material> materials; 
 
     @PrePersist
