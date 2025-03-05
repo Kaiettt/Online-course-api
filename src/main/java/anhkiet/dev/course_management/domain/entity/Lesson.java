@@ -43,6 +43,10 @@ public class Lesson {
     @JsonIgnore
     private Course course;
 
+    @OneToMany(mappedBy = "lesson") 
+    @JsonIgnoreProperties({"questions"})
+    private List<Test> tests; 
+
    @OneToMany(mappedBy = "lesson") 
     private List<Material> materials; 
 

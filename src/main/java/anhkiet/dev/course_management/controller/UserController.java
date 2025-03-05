@@ -7,7 +7,6 @@ import anhkiet.dev.course_management.domain.entity.User;
 import anhkiet.dev.course_management.domain.request.UserRequest;
 
 import anhkiet.dev.course_management.config.ApiMessage;
-import anhkiet.dev.course_management.error.EmailAlreadyExistsException;
 import anhkiet.dev.course_management.error.HandleNumber;
 import anhkiet.dev.course_management.error.InvalidIDException;
 import anhkiet.dev.course_management.service.UserService;
